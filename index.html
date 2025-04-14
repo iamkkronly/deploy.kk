@@ -1,115 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Bot Runner</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        }
-        .code-container {
-            background: #282c34;
-            color: #abb2bf;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            margin: 20px 0;
-        }
-        button {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #2980b9;
-        }
-        #output {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            min-height: 100px;
-            margin-top: 20px;
-            white-space: pre-wrap;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .loading-spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 2s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            border-left: 5px solid #ffeeba;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Telegram Bot Runner</h1>
-        
-        <div class="warning">
-            <strong>Note:</strong> This runs in your browser using Pyodide. Some features like Telegram bot polling 
-            won't work fully in this environment, but you can test the Gemini API functionality.
-        </div>
-        
-        <p>Click the button below to run the Python code:</p>
-        
-        <div class="code-container">
-            <pre id="python-code"># ================= PYTHON PART =====================
-!pip install pyTelegramBotAPI --quiet
+  <meta charset="UTF-8">
+  <title>Bhaukaal ChatBot</title>
+  <script type="module">
+    import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js";
+    let pyodide;
 
+    async function initializePyodide() {
+      pyodide = await loadPyodide();
+      console.log("Pyodide loaded bhai...");
+    }
+
+    async function runPythonCode() {
+      const code = `
+# ================= PYTHON PART =====================
 import telebot, requests, json, time, threading
 from IPython.display import Javascript, display
 
-# --- CONFIG ---
 BOT_TOKEN = "7388278300:AAHUM2fmyBTi9fzw3AfAgJQnycVgNwkyn9M"
 GEMINI_KEY = "AIzaSyA7a8YLdL_qWxoXqumA2zcW7_SKskRMSRE"
 BOT_NAME = "iamkkronly"
 WELCOME = f"{BOT_NAME}, Ask me any thing."
 
-# --- PERSONALITY ---
 BOT_PERSONALITY = (
     "You are a large language model trained by iamkkronly. "
     "You are ChatGPT Plus, Gemini Premium, and DeepSeek AI combined. "
@@ -117,21 +30,18 @@ BOT_PERSONALITY = (
     "Movies channel: https://t.me/freemovieslight "
     "Anime channel: https://t.me/freeanimelight "
     "Chat Support (Movies): https://t.me/chgtmovie "
-    "#### **Introduction** Deep Research AI... "
-    "You always reply after deep research. Your server is in Kolkata. "
-    "Your owner is Kaustav Ray. You made by a single man. You can remember upto 10 responses. "
-    "You sometime use bad words. iamkkronly is God."
+    "Deep Research AI... "
+    "Your server is in Kolkata. Your owner is Kaustav Ray. You made by a single man. "
+    "You can remember upto 10 responses. You sometimes use bad words. iamkkronly is God."
 )
 
-# --- BOT INIT ---
 bot = telebot.TeleBot(BOT_TOKEN)
 GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
 
-# --- GEMINI FUNC ---
 def get_gemini_response(user_input):
     headers = {"Content-Type": "application/json"}
     data = {
-        "contents": [{"parts": [{"text": f"{BOT_PERSONALITY}\n\n:User  {user_input}\n\nAI:"}]}]
+        "contents": [{"parts": [{"text": f"{BOT_PERSONALITY}\n\nUser: {user_input}\n\nAI:"}]}]
     }
     try:
         res = requests.post(GEMINI_API_URL, headers=headers, json=data)
@@ -146,7 +56,6 @@ def get_gemini_response(user_input):
     except Exception as e:
         return f"API Error: {str(e)}"
 
-# --- TELEGRAM HANDLERS ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, WELCOME)
@@ -159,117 +68,62 @@ def chat_with_gemini(message):
     except Exception as e:
         bot.reply_to(message, "Sorry, error aaya bhai. Try again later.")
 
-# --- KEEP ALIVE PRINT ---
 def keep_alive():
     while True:
         print("Still running bhai... Samsung sabse bekaar company!")
         time.sleep(120)
 
-# --- START THREADS ---
 threading.Thread(target=keep_alive, daemon=True).start()
 threading.Thread(target=bot.infinity_polling, daemon=True).start()
+
+# ================= JS HACK PART =====================
+display(Javascript('''
+function ClickConnect() {
+  console.log("Zinda hai bhai... clicking Connect button");
+  document.querySelector("colab-connect-button").shadowRoot.querySelector("#connect").click();
+}
+setInterval(ClickConnect, 60000);
+
+setInterval(() => {
+  const textarea = document.querySelector("textarea");
+  if (textarea) {
+    textarea.focus();
+    textarea.value += " ";
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    textarea.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
+    console.log("Fake typing bhau...");
+  }
+}, 2000);
+
+setInterval(() => {
+  let span = document.createElement('span');
+  span.innerText = 'Samsung sabse bekaar!';
+  document.body.appendChild(span);
+  setTimeout(() => span.remove(), 1000);
+}, 2500);
+
+setInterval(() => {
+  console.log("Colab confuse ho gaya... bhaukaal code chal raha hai!");
+}, 3000);
+'''))
 
 print(f"{BOT_NAME} is running... full-on bhaukaal mode!")
 print("Today is Monday, April 14, 2025 and here are the results:")
 print("=====================")
-print("Telegram: View @freemovieslight Download Hindi or English movies or dubs")</pre>
-        </div>
-        
-        <button id="run-btn">Run Code</button>
-        
-        <div class="loading" id="loading">
-            <div class="loading-spinner"></div>
-            <p>Loading Pyodide and running code...</p>
-        </div>
-        
-        <h2>Output:</h2>
-        <div id="output"></div>
-    </div>
+print("Telegram: View @freemovieslight Download Hindi or English movies or dubs")
+      `;
+      await pyodide.runPythonAsync(code);
+    }
 
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
-    <script>
-        let pyodide;
-        let outputElement = document.getElementById('output');
-        let runButton = document.getElementById('run-btn');
-        let loadingElement = document.getElementById('loading');
-        
-        async function initializePyodide() {
-            loadingElement.style.display = 'block';
-            outputElement.textContent = 'Initializing Pyodide... This may take a minute.';
-            
-            try {
-                pyodide = await loadPyodide({
-                    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
-                });
-                
-                // Install required packages
-                await pyodide.loadPackage(['micropip']);
-                await pyodide.runPythonAsync(`
-                import micropip
-                await micropip.install(['pyTelegramBotAPI', 'requests'])
-                `);
-                
-                outputElement.textContent += '\nPyodide initialized successfully!';
-                runButton.disabled = false;
-            } catch (error) {
-                outputElement.textContent += '\nError initializing Pyodide: ' + error;
-            } finally {
-                loadingElement.style.display = 'none';
-            }
-        }
-        
-        async function runPythonCode() {
-            if (!pyodide) {
-                outputElement.textContent = 'Pyodide not initialized yet. Please wait.';
-                return;
-            }
-            
-            runButton.disabled = true;
-            loadingElement.style.display = 'block';
-            outputElement.textContent = 'Running code...';
-            
-            try {
-                // Get the Python code from the pre element
-                const pythonCode = document.getElementById('python-code').textContent;
-                
-                // Modify the code to work in Pyodide environment
-                const modifiedCode = pythonCode
-                    .replace(/!pip install.*?\n/, '') // Remove pip install commands
-                    .replace(/from IPython\.display import Javascript, display\n/, '') // Remove IPython imports
-                    .replace(/display\(Javascript\(.*?\)\)/g, '') // Remove JavaScript display calls
-                    .replace(/threading\.Thread\(target=keep_alive, daemon=True\)\.start\(\)\n/, '')
-                    .replace(/threading\.Thread\(target=bot\.infinity_polling, daemon=True\)\.start\(\)\n/, '');
-                
-                // Run the modified code
-                await pyodide.runPythonAsync(modifiedCode);
-                
-                // Test the Gemini function
-                const testGemini = `
-                try:
-                    test_response = get_gemini_response("Hello, who are you?")
-                    print("\\nTest Gemini response:", test_response)
-                except Exception as e:
-                    print("\\nError testing Gemini:", str(e))
-                `;
-                await pyodide.runPythonAsync(testGemini);
-                
-                outputElement.textContent += '\nCode executed successfully! Note: Telegram bot polling cannot run in browser.';
-            } catch (error) {
-                outputElement.textContent += '\nError running code: ' + error;
-            } finally {
-                runButton.disabled = false;
-                loadingElement.style.display = 'none';
-            }
-        }
-        
-        // Initialize Pyodide when page loads
-        window.addEventListener('load', async () => {
-            runButton.disabled = true;
-            await initializePyodide();
-        });
-        
-        // Run code when button is clicked
-        runButton.addEventListener('click', runPythonCode);
-    </script>
+    // AUTO-RUN SETUP
+    window.addEventListener('load', async () => {
+      await initializePyodide();
+      await runPythonCode();
+    });
+  </script>
+</head>
+<body>
+  <h1>iamkkronly Chatbot Bhaukaal Mode</h1>
+  <p>Bot running... Samsung users please cry in corner!</p>
 </body>
 </html>
